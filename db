@@ -1,0 +1,17 @@
+const app= `{
+"name": "redismanager",
+"apps": {
+"name": {
+"image": "imagename",
+"instances": 1
+},
+"name2": {
+"image": "imagename",
+"instances": 3,
+"lb": {
+"type": "http",
+"frontend": ""
+}
+}
+}
+}`
