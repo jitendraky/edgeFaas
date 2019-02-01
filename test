@@ -1,0 +1,48 @@
+package main
+
+import (
+"fmt"
+//"io/ioutil"
+"log"
+"net/http"
+"time"
+"github.com/tidwall/gjson"
+resty "gopkg.in/resty.v1"
+)
+
+func Log(handler http.Handler) http.Handler {
+return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+log.Printf("%s %s %s", r.RemoteAddr, r.Method, r.URL)
+handler.ServeHTTP(w, r)
+})
+}
+
+func handler(w http.ResponseWriter, r *http.Request) {
+}
+
+func startFunc() {
+for {
+<-time.After(4 * time.Second)
+fmt.Println("start")
+
+const json = `{"name":{"first":"Janet","last":"Prichard"},"age":47}`
+value := gjson.Get(json, "name.last")
+fmt.Println(value.String())
+resp, err := resty.R().Get("http://localhost:8007")
+
+// explore response object
+fmt.Printf("\nError: %v", err)
+fmt.Printf("\nResponse Status Code: %v", resp.StatusCode())
+fmt.Printf("\nResponse Status: %v", resp.Status())
+fmt.Printf("\nResponse Time: %v", resp.Time())
+fmt.Printf("\nResponse Received At: %v", resp.ReceivedAt())
+fmt.Printf("\nResponse Body: %v", resp)
+}
+}
+func main() {
+go startFunc()
+//go startPolling2()
+http.HandleFunc("/", handler)
+http.ListenAndServe(":8007", Log(http.DefaultServeMux))
+}
+
